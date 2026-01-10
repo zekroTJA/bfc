@@ -136,11 +136,11 @@ int bf_run(char *sinput, int buffer_size, bool debug) {
 
     case C_LOOP_START:
       if (buffer[pointer] == 0) {
-        int loop_stack = 1;
+        int loop_depth = 1;
         while ((c = scanner_next(&sc)) != EOF) {
           if (c == C_LOOP_START) {
-            loop_stack++;
-          } else if (c == C_LOOP_END && --loop_stack == 0) {
+            loop_depth++;
+          } else if (c == C_LOOP_END && --loop_depth == 0) {
             --loop_stack_head;
             break;
           }
