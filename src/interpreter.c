@@ -141,6 +141,7 @@ int bf_run(char *sinput, int buffer_size, bool debug) {
           if (c == C_LOOP_START) {
             loop_stack++;
           } else if (c == C_LOOP_END && --loop_stack == 0) {
+            --loop_stack_head;
             break;
           }
         }
@@ -156,6 +157,12 @@ int bf_run(char *sinput, int buffer_size, bool debug) {
       // NOOP
       break;
     }
+  }
+
+  if (loop_stack_head > 0) {
+    err = ERR_UNMATCHED_LOOP;
+    errorf("unmatched end of loop");
+    goto cleanup;
   }
 
 cleanup:
