@@ -27,6 +27,9 @@ void print_help() {
 }
 
 int parse_args(int argc, char **argv, args *args) {
+  // Set defaults:
+  args->buffer_size = DEFAULT_BUFFER_SIZE;
+
   // Early return when no args were passed.
   if (argc < 2) {
     return 0;
@@ -64,10 +67,6 @@ int parse_args(int argc, char **argv, args *args) {
     // pos_c be larger or equal argc, catch that here.
     assert(pos_c < argc);
     pos_v[pos_c++] = curr;
-  }
-
-  if (args->buffer_size == 0) {
-    args->buffer_size = DEFAULT_BUFFER_SIZE;
   }
 
   args->pos_c = pos_c;
