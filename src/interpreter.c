@@ -142,12 +142,20 @@ int bf_run(char *sinput, int buffer_size, bool debug) {
           if (c == C_LOOP_START) {
             loop_depth++;
           } else if (c == C_LOOP_END && --loop_depth == 0) {
-            --loop_stack_head;
             break;
           }
         }
+        // This is a bit hacky: increasing the loop_stack_head to
+        // trigger the unmatched end of loop error at the end though
+        // no index has been pushed on the stack, but it works. This
+        // might break though when we want to read out the value at
+        // loop_stack_head in loop_stack later on!
+        if (loop_depth > 0) {
+          loop_stack_head++;
+        }
+      } else {
+        loop_stack[loop_stack_head++] = sc.cursor - 1;
       }
-      loop_stack[loop_stack_head++] = sc.cursor - 1;
       break;
 
     case C_LOOP_END:
