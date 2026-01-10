@@ -24,7 +24,7 @@
 #define maxof(t) ((unsigned long long)(issigned(t) ? smaxof(t) : umaxof(t)))
 
 // We define the cell size to be an 8bit integer (char).
-typedef char CELL;
+typedef unsigned char CELL;
 const CELL MAX_CELL = maxof(CELL);
 
 #define MAX_LOOP_DEPTH 1000
@@ -59,10 +59,11 @@ void scanner_reset(scanner *s, int to) {
   s->cursor = to;
 }
 
-void debug_print(int pointer, int buffer_size, CELL *buffer) {
+void debug_print(int pointer, int buffer_size, CELL *buffer, int idx) {
   assert(buffer != NULL);
 
   fprintf(stderr, "pointer: %d\n", pointer);
+  fprintf(stderr, "index:   %d\n", idx);
   fprintf(stderr, "[%d", buffer[0]);
   for (int i = 1; i < buffer_size; i++) {
     fprintf(stderr, ", %d", buffer[i]);
@@ -167,7 +168,7 @@ int bf_run(char *sinput, int buffer_size, bool debug) {
 
 cleanup:
   if (debug) {
-    debug_print(pointer, buffer_size, buffer);
+    debug_print(pointer, buffer_size, buffer, sc.cursor);
   }
   free(buffer);
   return err;
