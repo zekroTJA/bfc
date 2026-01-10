@@ -2,6 +2,7 @@
 #define ERRS_H
 
 #define ERR_OPENING_INPUT_FILE 1
+#define ERR_READING_INPUT 2
 
 #define ERR_INVALID_ARGUMENT 101
 

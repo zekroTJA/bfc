@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 
 #include "errs.h"
@@ -10,7 +11,9 @@
 // Here comes some obscure macro wizardry to get the maxmum value of any opaque
 // type.
 // Why? Because.
-// Source: https://stackoverflow.com/a/7266266
+// Source - https://stackoverflow.com/a/7266266
+// Posted by Glyph, modified by community. See post 'Timeline' for change
+// history Retrieved 2026-01-10, License - CC BY-SA 4.0
 #define issigned(t) (((t)(-1)) < ((t)0))
 #define umaxof(t)                                                              \
   (((0x1ULL << ((sizeof(t) * 8ULL) - 1ULL)) - 1ULL) |                          \
@@ -24,6 +27,8 @@
 typedef char CELL;
 const CELL MAX_CELL = maxof(CELL);
 
+#define MAX_LOOP_DEPTH 1000
+
 // Valid tokens
 #define C_PTR_INC '>'
 #define C_PTR_DEC '<'
@@ -33,22 +38,46 @@ const CELL MAX_CELL = maxof(CELL);
 #define C_LOOP_START '['
 #define C_LOOP_END ']'
 
-void debug_print(int pointer, int cells_size, CELL *cell) {
-  assert(cell != NULL);
+typedef struct scanner {
+  char *src;
+  int cursor;
+} scanner;
+
+char scanner_next(scanner *s) {
+  char c = s->src[s->cursor];
+  if (c == '\0') {
+    return EOF;
+  }
+
+  s->cursor++;
+
+  return c;
+}
+
+void scanner_reset(scanner *s, int to) {
+  assert(s->cursor > 0);
+  s->cursor = to;
+}
+
+void debug_print(int pointer, int buffer_size, CELL *buffer) {
+  assert(buffer != NULL);
 
   fprintf(stderr, "pointer: %d\n", pointer);
-  fprintf(stderr, "[%d", cell[0]);
-  for (int i = 1; i < cells_size; i++) {
-    fprintf(stderr, ", %d", cell[i]);
+  fprintf(stderr, "[%d", buffer[0]);
+  for (int i = 1; i < buffer_size; i++) {
+    fprintf(stderr, ", %d", buffer[i]);
   }
   fprintf(stderr, "]\n");
 }
 
-int bf_run(FILE *fptr, int buffer_size, bool debug) {
+int bf_run(char *sinput, int buffer_size, bool debug) {
   assert(buffer_size > 0);
-  assert(fptr != NULL);
+  assert(sinput != NULL);
 
   int err = 0;
+
+  int loop_stack[MAX_LOOP_DEPTH] = {0};
+  int loop_stack_head = 0;
 
   CELL *buffer = (CELL *)malloc(buffer_size * sizeof(CELL));
   if (buffer == NULL) {
@@ -56,11 +85,15 @@ int bf_run(FILE *fptr, int buffer_size, bool debug) {
     errorf("cell buffer allocation failed");
     goto cleanup;
   }
+  // Is this necessary?
+  memset(buffer, (CELL)0, buffer_size * sizeof(CELL));
 
   int pointer = 0;
 
+  scanner sc = {.src = sinput, .cursor = 0};
+
   char c = 0;
-  while ((c = fgetc(fptr)) > 0) {
+  while ((c = scanner_next(&sc)) != EOF) {
     switch (c) {
 
     case C_PTR_INC:
@@ -101,6 +134,24 @@ int bf_run(FILE *fptr, int buffer_size, bool debug) {
       putc(buffer[pointer], stdout);
       break;
 
+    case C_LOOP_START:
+      if (buffer[pointer] == 0) {
+        int loop_stack = 1;
+        while ((c = scanner_next(&sc)) != EOF) {
+          if (c == C_LOOP_START) {
+            loop_stack++;
+          } else if (c == C_LOOP_END && --loop_stack == 0) {
+            break;
+          }
+        }
+      }
+      loop_stack[loop_stack_head++] = sc.cursor - 1;
+      break;
+
+    case C_LOOP_END:
+      scanner_reset(&sc, loop_stack[--loop_stack_head]);
+      break;
+
     default:
       // NOOP
       break;
@@ -112,6 +163,5 @@ cleanup:
     debug_print(pointer, buffer_size, buffer);
   }
   free(buffer);
-  fclose(fptr);
   return err;
 }

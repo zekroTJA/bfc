@@ -1,11 +1,41 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "args.h"
 #include "errs.h"
 #include "interpreter.h"
 #include "output.h"
+
+char *read_to_string(FILE *file) {
+  int capacity = 1024;
+  int length = 0;
+
+  char *buffer = malloc(capacity);
+  if (!buffer) {
+    errorf("failed allocating buffer for reading file");
+    return NULL;
+  }
+
+  char c;
+  while ((c = fgetc(file)) != EOF) {
+    if (length + 1 >= capacity) {
+      capacity *= 2;
+      char *temp = realloc(buffer, capacity);
+      if (!temp) {
+        free(buffer);
+        errorf("failed resizing buffer for reading file");
+        return NULL;
+      }
+      buffer = temp;
+    }
+    buffer[length++] = c;
+  }
+
+  buffer[length] = '\0';
+  return buffer;
+}
 
 int main(int argc, char **argv) {
   int err = 0;
@@ -31,9 +61,17 @@ int main(int argc, char **argv) {
     finput = stdin;
   }
 
-  err = bf_run(finput, args.buffer_size, args.debug);
+  char *sinput = read_to_string(finput);
+  if (!sinput) {
+    err = ERR_READING_INPUT;
+    goto cleanup;
+  }
+
+  err = bf_run(sinput, args.buffer_size, args.debug);
 
 cleanup:
+  free(sinput);
+  fclose(finput);
   free_args(&args);
   return err;
 }
