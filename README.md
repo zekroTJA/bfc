@@ -53,4 +53,4 @@ The buffer for the cells is pre-allocated and has by default a size of 30000, bu
 
 - Implement input (`,` syntax)
 - Dynamic resizing of the cell buffer
-- Optimizations (like `[-]`)
+- Optimizations (like `[-]`) _[see [ref](https://shards.info/github/soya-daizu/bfcr/readme)]_
