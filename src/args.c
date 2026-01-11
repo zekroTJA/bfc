@@ -22,11 +22,12 @@ void print_help() {
           "\t-b, --buffer-size <BUFFER_SIZE>  Define the size of the program "
           "buffer [default: %d]\n",
           DEFAULT_BUFFER_SIZE);
+  fputs("\t-D, --debug                      Enable debug mode\n", stderr);
   fputs("\t-d, --dynamic-reallocation       Enable dynamic reallocation of the "
         "program buffer\n",
         stderr);
-  fputs("\t-D, --debug                      Enable debug mode\n", stderr);
   fputs("\t-h, --help                       Print help message\n", stderr);
+  fputs("\t-j, --json                       Output as JSON format\n", stderr);
 }
 
 int parse_args(int argc, char **argv, args *args) {
@@ -67,6 +68,11 @@ int parse_args(int argc, char **argv, args *args) {
       continue;
     }
 
+    if (strcmp(curr, "--json") == 0 || strcmp(curr, "-j") == 0) {
+      args->json = true;
+      continue;
+    }
+
     if (strcmp(curr, "--debug") == 0 || strcmp(curr, "-D") == 0) {
       args->debug = true;
       continue;
@@ -84,4 +90,7 @@ int parse_args(int argc, char **argv, args *args) {
   return 0;
 }
 
-void free_args(args *args) { free(args->pos_v); }
+void free_args(args *args) {
+  free(args->pos_v);
+  args->pos_v = NULL;
+}

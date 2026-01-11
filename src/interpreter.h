@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
-int bf_run(char *fptr, int buffer_size, bool dynamic_realloc, bool debug);
+int bf_run(char *fptr, int buffer_size, bool dynamic_realloc, bool output_json,
+           bool debug);
 
 #endif

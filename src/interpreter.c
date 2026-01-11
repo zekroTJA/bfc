@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "dstring.h"
 #include "errs.h"
 #include "output.h"
 
@@ -59,16 +60,44 @@ void scanner_reset(scanner *s, int to) {
   s->cursor = to;
 }
 
-void debug_print(int pointer, int buffer_size, CELL *buffer, int idx) {
+void print_debug(int pointer, int buffer_size, CELL *buffer, int index) {
   assert(buffer != NULL);
 
   fprintf(stderr, "pointer: %d\n", pointer);
-  fprintf(stderr, "index:   %d\n", idx);
+  fprintf(stderr, "index:   %d\n", index);
   fprintf(stderr, "[%d", buffer[0]);
   for (int i = 1; i < buffer_size; i++) {
     fprintf(stderr, ", %d", buffer[i]);
   }
   fprintf(stderr, "]\n");
+}
+
+void print_json(int pointer, int buffer_size, CELL *buffer, int index,
+                char *output) {
+
+  assert(buffer != NULL);
+
+  fputs("{\"output\":\"", stdout);
+  for (int i = 0;; i++) {
+    char c = output[i];
+    if (c == '\0') {
+      break;
+    } else if (c == '\\') {
+      fputs("\\", stdout);
+    } else if (c == '\n') {
+      fputs("\\n", stdout);
+    } else if (c == '\t') {
+      fputs("\\t", stdout);
+    } else {
+      putchar(c);
+    }
+  }
+  printf("\",\"pointer\":%d,\"index\":%d,\"buffer\":", pointer, index);
+  printf("[%d", buffer[0]);
+  for (int i = 1; i < buffer_size; i++) {
+    printf(",%d", buffer[i]);
+  }
+  printf("]}");
 }
 
 void *zero_realloc(void *ptr, unsigned long curr_size, unsigned long new_size) {
@@ -84,7 +113,9 @@ void *zero_realloc(void *ptr, unsigned long curr_size, unsigned long new_size) {
   return new_ptr;
 }
 
-int bf_run(char *sinput, int buffer_size, bool dynamic_realloc, bool debug) {
+int bf_run(char *sinput, int buffer_size, bool dynamic_realloc,
+           bool output_json, bool debug) {
+
   assert(buffer_size > 0);
   assert(sinput != NULL);
 
@@ -103,6 +134,8 @@ int bf_run(char *sinput, int buffer_size, bool dynamic_realloc, bool debug) {
   int pointer = 0;
 
   scanner sc = {.src = sinput, .cursor = 0};
+
+  dstring output_ds = {};
 
   char c = 0;
   while ((c = scanner_next(&sc)) != EOF) {
@@ -157,7 +190,14 @@ int bf_run(char *sinput, int buffer_size, bool dynamic_realloc, bool debug) {
       break;
 
     case C_PRINT:
-      putc(buffer[pointer], stdout);
+      if (output_json) {
+        if ((err = dstring_push_char(&output_ds, buffer[pointer])) != 0) {
+          errorf("failed allocating output dstring buffer");
+          goto cleanup;
+        }
+      } else {
+        putc(buffer[pointer], stdout);
+      }
       break;
 
     case C_LOOP_START:
@@ -201,8 +241,12 @@ int bf_run(char *sinput, int buffer_size, bool dynamic_realloc, bool debug) {
 
 cleanup:
   if (debug) {
-    debug_print(pointer, buffer_size, buffer, sc.cursor);
+    print_debug(pointer, buffer_size, buffer, sc.cursor);
   }
+  if (output_json) {
+    print_json(pointer, buffer_size, buffer, sc.cursor, output_ds.buffer);
+  }
+  dstring_free(&output_ds);
   free(buffer);
   return err;
 }

@@ -6,6 +6,7 @@
 typedef struct args {
   int buffer_size;
   bool dynamic_reallocation;
+  bool json;
   bool debug;
   int pos_c;
   char **pos_v;
