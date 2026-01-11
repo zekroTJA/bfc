@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  valgrind:
+    name: Valgrind
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v6
+      - name: make binary
+        run: make
+      - name: Valgrind (Default Args)
+        uses: Ximaz/valgrind-action@1.2.1
+        with:
+          binary_path: dist/bfc
+          binary_args: inputs/hello_world.bf
+      - name: Valgrind (Dynamic Reallocation)
+        uses: Ximaz/valgrind-action@1.2.1
+        with:
+          binary_path: dist/bfc
+          binary_args: inputs/hello_world.bf --buffer-size 2 --dynamic-reallocation
