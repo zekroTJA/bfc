@@ -8,6 +8,7 @@ typedef struct dstring {
 } dstring;
 
 int dstring_push_char(dstring *ds, char c);
+int dstring_push_char_escaped(dstring *ds, char c);
 void dstring_free(dstring *ds);
 
 #endif

@@ -77,22 +77,8 @@ void print_json(int pointer, int buffer_size, CELL *buffer, int index,
 
   assert(buffer != NULL);
 
-  fputs("{\"output\":\"", stdout);
-  for (int i = 0;; i++) {
-    char c = output[i];
-    if (c == '\0') {
-      break;
-    } else if (c == '\\') {
-      fputs("\\", stdout);
-    } else if (c == '\n') {
-      fputs("\\n", stdout);
-    } else if (c == '\t') {
-      fputs("\\t", stdout);
-    } else {
-      putchar(c);
-    }
-  }
-  printf("\",\"pointer\":%d,\"index\":%d,\"buffer\":", pointer, index);
+  printf("{\"output\":\"%s\",\"pointer\":%d,\"index\":%d,\"buffer\":", output,
+         pointer, index);
   printf("[%d", buffer[0]);
   for (int i = 1; i < buffer_size; i++) {
     printf(",%d", buffer[i]);
@@ -191,7 +177,8 @@ int bf_run(char *sinput, int buffer_size, bool dynamic_realloc,
 
     case C_PRINT:
       if (output_json) {
-        if ((err = dstring_push_char(&output_ds, buffer[pointer])) != 0) {
+        if ((err = dstring_push_char_escaped(&output_ds, buffer[pointer])) !=
+            0) {
           errorf("failed allocating output dstring buffer");
           goto cleanup;
         }

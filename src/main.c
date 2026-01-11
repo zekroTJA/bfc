@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -9,6 +10,8 @@
 #include "output.h"
 
 char *read_to_string(FILE *file) {
+  assert(file != NULL);
+
   int capacity = 1024;
   int length = 0;
 
@@ -72,7 +75,9 @@ int main(int argc, char **argv) {
 
 cleanup:
   free(sinput);
-  fclose(finput);
+  if (finput != stdin) {
+    fclose(finput);
+  }
   free_args(&args);
   return err;
 }
