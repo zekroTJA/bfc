@@ -42,3 +42,15 @@ Run from stdin:
 ```bash
 cat inputs/hello_world.bf | ./dist/bfc
 ```
+
+## Language Implementation Details
+
+Some rules of the languages seem not to be as clearly defined, so some assumptions were made based on some documentation I found and other implementations of brainfuck.
+
+The buffer for the cells is pre-allocated and has by default a size of 30000, but you can define a custom size via the `--buffer-size` option. When the pointer moves out of the bounds of the buffer, the program will error. The cell size is 8 bit (`[0..255]`). The values will wrap around when over or underflowing. Currently, the implementation has a limitation that loops can only be nested up to a depth of `1000`. Also the whole program code is load into memory, so the size of your program is limited by the amount of available system memory. Also the input of data (`,` syntax) is currently not implemented.
+
+## TODOs and Ideas
+
+- Implement input (`,` syntax)
+- Dynamic resizing of the cell buffer
+- Optimizations (like `[-]`)
