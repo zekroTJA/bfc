@@ -27,9 +27,10 @@ Arguments:
 
 Options:
 	-b, --buffer-size <BUFFER_SIZE>  Define the size of the program buffer [default: 30000]
-	-d, --dynamic-reallocation       Enable dynamic reallocation of the program buffer
 	-D, --debug                      Enable debug mode
+	-d, --dynamic-reallocation       Enable dynamic reallocation of the program buffer
 	-h, --help                       Print help message
+	-j, --json                       Output as JSON format
 ```
 
 Run from a file:
