@@ -27,3 +27,13 @@ jobs:
         with:
           binary_path: dist/bfc
           binary_args: inputs/hello_world.bf --buffer-size 2 --dynamic-reallocation
+      - name: Valgrind (JSON Output)
+        uses: Ximaz/valgrind-action@1.2.1
+        with:
+          binary_path: dist/bfc
+          binary_args: inputs/hello_world.bf --json
+      - name: Valgrind (Dynamic Reallocation + JSON Output)
+        uses: Ximaz/valgrind-action@1.2.1
+        with:
+          binary_path: dist/bfc
+          binary_args: inputs/hello_world.bf --buffer-size 2 --dynamic-reallocation --json
