@@ -8,6 +8,10 @@ $(TARGET): $(OBJ)
 	mkdir -p $(dir $(TARGET))
 	$(CC) $(OBJ) -o $(TARGET)
 
+static: $(OBJ)
+	mkdir -p $(dir $(TARGET))
+	$(CC) -static $(OBJ) -o $(TARGET)
+
 build/%.o: src/%.c | build
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -15,4 +19,6 @@ build:
 	mkdir -p build
 
 clean:
-	rm -rf $(OBJ) $(dir $(TARGET))
+	rm -rf build dist
+
+.PHONY: clean static
