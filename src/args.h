@@ -5,6 +5,7 @@
 
 typedef struct args {
   int buffer_size;
+  bool dynamic_reallocation;
   bool debug;
   int pos_c;
   char **pos_v;

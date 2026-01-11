@@ -27,7 +27,8 @@ Arguments:
 
 Options:
 	-b, --buffer-size <BUFFER_SIZE>  Define the size of the program buffer [default: 30000]
-	-d, --debug                      Enable debug mode
+	-d, --dynamic-reallocation       Enable dynamic reallocation of the program buffer
+	-D, --debug                      Enable debug mode
 	-h, --help                       Print help message
 ```
 
@@ -51,6 +52,6 @@ The buffer for the cells is pre-allocated and has by default a size of 30000, bu
 
 ## TODOs and Ideas
 
-- Implement input (`,` syntax)
-- Dynamic resizing of the cell buffer
-- Optimizations (like `[-]`) _[see [ref](https://shards.info/github/soya-daizu/bfcr/readme)]_
+- [ ] Implement input (`,` syntax)
+- [ ] Optimizations (like `[-]`) _[see [ref](https://shards.info/github/soya-daizu/bfcr/readme)]_
+- [x] Dynamic resizing of the cell buffer

@@ -71,7 +71,20 @@ void debug_print(int pointer, int buffer_size, CELL *buffer, int idx) {
   fprintf(stderr, "]\n");
 }
 
-int bf_run(char *sinput, int buffer_size, bool debug) {
+void *zero_realloc(void *ptr, unsigned long curr_size, unsigned long new_size) {
+  assert(ptr != NULL);
+
+  void *new_ptr = realloc(ptr, new_size);
+  if (new_ptr == NULL) {
+    return NULL;
+  }
+
+  memset(new_ptr + curr_size, 0, (new_size - curr_size));
+
+  return new_ptr;
+}
+
+int bf_run(char *sinput, int buffer_size, bool dynamic_realloc, bool debug) {
   assert(buffer_size > 0);
   assert(sinput != NULL);
 
@@ -80,14 +93,12 @@ int bf_run(char *sinput, int buffer_size, bool debug) {
   int loop_stack[MAX_LOOP_DEPTH] = {0};
   int loop_stack_head = 0;
 
-  CELL *buffer = (CELL *)malloc(buffer_size * sizeof(CELL));
+  CELL *buffer = (CELL *)calloc(buffer_size, sizeof(CELL));
   if (buffer == NULL) {
     err = ERR_CELL_BUFFER_ALLOCATION_FAILED;
     errorf("cell buffer allocation failed");
     goto cleanup;
   }
-  // Is this necessary?
-  memset(buffer, (CELL)0, buffer_size * sizeof(CELL));
 
   int pointer = 0;
 
@@ -99,10 +110,24 @@ int bf_run(char *sinput, int buffer_size, bool debug) {
 
     case C_PTR_INC:
       if (++pointer >= buffer_size) {
-        err = ERR_BUFFER_INDEX_OUT_OF_BOUNDS;
-        errorf("buffer index out of bounds (idx: %d >= cell size: %d)", pointer,
-               buffer_size);
-        goto cleanup;
+        if (dynamic_realloc) {
+          int new_buffer_size = buffer_size * 2;
+          CELL *tmp = (CELL *)zero_realloc(buffer, buffer_size * sizeof(CELL),
+                                           new_buffer_size * sizeof(CELL));
+          if (tmp == NULL) {
+            err = ERR_CELL_BUFFER_DYNAMIC_ALLOCATION_FAILED;
+            errorf("dynamic reallocation of cell buffer failed (new size %d)",
+                   new_buffer_size);
+            goto cleanup;
+          }
+          buffer = tmp;
+          buffer_size = new_buffer_size;
+        } else {
+          err = ERR_BUFFER_INDEX_OUT_OF_BOUNDS;
+          errorf("buffer index out of bounds (idx: %d >= cell size: %d)",
+                 pointer, buffer_size);
+          goto cleanup;
+        }
       }
       break;
 

@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-int bf_run(char *fptr, int buffer_size, bool debug);
+int bf_run(char *fptr, int buffer_size, bool dynamic_realloc, bool debug);
 
 #endif

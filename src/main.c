@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
-  err = bf_run(sinput, args.buffer_size, args.debug);
+  err = bf_run(sinput, args.buffer_size, args.dynamic_reallocation, args.debug);
 
 cleanup:
   free(sinput);

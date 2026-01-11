@@ -22,7 +22,10 @@ void print_help() {
           "\t-b, --buffer-size <BUFFER_SIZE>  Define the size of the program "
           "buffer [default: %d]\n",
           DEFAULT_BUFFER_SIZE);
-  fputs("\t-d, --debug                      Enable debug mode\n", stderr);
+  fputs("\t-d, --dynamic-reallocation       Enable dynamic reallocation of the "
+        "program buffer\n",
+        stderr);
+  fputs("\t-D, --debug                      Enable debug mode\n", stderr);
   fputs("\t-h, --help                       Print help message\n", stderr);
 }
 
@@ -58,7 +61,13 @@ int parse_args(int argc, char **argv, args *args) {
       continue;
     }
 
-    if (strcmp(curr, "--debug") == 0 || strcmp(curr, "-d") == 0) {
+    if (strcmp(curr, "--dynamic-reallocation") == 0 ||
+        strcmp(curr, "-d") == 0) {
+      args->dynamic_reallocation = true;
+      continue;
+    }
+
+    if (strcmp(curr, "--debug") == 0 || strcmp(curr, "-D") == 0) {
       args->debug = true;
       continue;
     }
