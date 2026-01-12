@@ -2,14 +2,14 @@ import akane
 from util import BINARY, ERROR_CODES
 
 
-@akane.test()
+@akane.test("general: hello world")
 def hello_world():
     INPUT = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."
     res = akane.exec(BINARY, input=INPUT)
     akane.assert_eq("Hello World!\n", res)
 
 
-@akane.test()
+@akane.test("general: dynamic buffer")
 def hello_world_dynamic_buffer():
     INPUT = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."
 
