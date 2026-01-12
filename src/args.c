@@ -44,6 +44,12 @@ int parse_args(int argc, char **argv, args *args) {
 
   for (int i = 1; i < argc; i++) {
     char *curr = argv[i];
+    unsigned long curr_len = strlen(curr);
+
+    if (curr_len == 0) {
+      errorf("a value for [INPUT_FILE] is required but non was supplied");
+      return ERR_INVALID_ARGUMENT;
+    }
 
     if (strcmp(curr, "--help") == 0 || strcmp(curr, "-h") == 0) {
       print_help();
@@ -76,6 +82,12 @@ int parse_args(int argc, char **argv, args *args) {
     if (strcmp(curr, "--debug") == 0 || strcmp(curr, "-D") == 0) {
       args->debug = true;
       continue;
+    }
+
+    // Catching invalid arguments
+    if (curr_len > 1 && curr[0] == '-') {
+      errorf("invalid option '%s'", curr);
+      return ERR_INVALID_ARGUMENT;
     }
 
     // Because pos_v is allocated with size of argc, should

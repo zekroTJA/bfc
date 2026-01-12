@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "args.h"
 #include "errs.h"
@@ -53,7 +54,7 @@ int main(int argc, char **argv) {
   }
 
   FILE *finput;
-  if (args.pos_c > 0) {
+  if (args.pos_c > 0 && strcmp(args.pos_v[0], "-") != 0) {
     finput = fopen(args.pos_v[0], "r");
     if (finput == NULL) {
       err = ERR_OPENING_INPUT_FILE;
@@ -75,7 +76,7 @@ int main(int argc, char **argv) {
 
 cleanup:
   free(sinput);
-  if (finput != stdin) {
+  if (finput != NULL && finput != stdin) {
     fclose(finput);
   }
   free_args(&args);

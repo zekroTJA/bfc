@@ -55,3 +55,7 @@ dkms.conf
 *.dwo
 
 /dist/
+
+# Python stuff
+/venv/
+__pycache__/
