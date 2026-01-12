@@ -43,6 +43,8 @@ char *read_to_string(FILE *file) {
 
 int main(int argc, char **argv) {
   int err = 0;
+  char *sinput = NULL;
+  FILE *finput = NULL;
 
   args args = {};
   err = parse_args(argc, argv, &args);
@@ -53,7 +55,6 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
-  FILE *finput;
   if (args.pos_c > 0 && strcmp(args.pos_v[0], "-") != 0) {
     finput = fopen(args.pos_v[0], "r");
     if (finput == NULL) {
@@ -65,7 +66,7 @@ int main(int argc, char **argv) {
     finput = stdin;
   }
 
-  char *sinput = read_to_string(finput);
+  sinput = read_to_string(finput);
   if (!sinput) {
     err = ERR_READING_INPUT;
     goto cleanup;
