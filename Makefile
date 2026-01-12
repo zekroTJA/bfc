@@ -6,7 +6,7 @@ TARGET = $(CURDIR)/dist/bfc
 TESTS_DIR = $(CURDIR)/tests
 
 
-.PHONY: clean static test_deps
+.PHONY: clean static test
 
 
 $(TARGET): $(OBJ)
@@ -26,8 +26,9 @@ build:
 clean:
 	rm -rf build dist
 
-test_deps:
+$(TESTS_DIR)/.deps: $(TESTS_DIR)/requirements.txt
 	python3 -m pip install --requirement $(TESTS_DIR)/requirements.txt
+	touch $(TESTS_DIR)/.deps
 
-test: $(TARGET) | test_deps
+test: $(TARGET) | $(TESTS_DIR)/.deps
 	python3 $(TESTS_DIR)/run.py
