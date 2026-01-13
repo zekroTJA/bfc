@@ -211,6 +211,11 @@ int bf_run(char *sinput, int buffer_size, bool dynamic_realloc,
       break;
 
     case C_LOOP_END:
+      if (loop_stack_head == 0) {
+        err = ERR_UNMATCHED_LOOP;
+        errorf("unmatched end of loop (missing '[')");
+        goto cleanup;
+      }
       scanner_reset(&sc, loop_stack[--loop_stack_head]);
       break;
 
@@ -222,7 +227,7 @@ int bf_run(char *sinput, int buffer_size, bool dynamic_realloc,
 
   if (loop_stack_head > 0) {
     err = ERR_UNMATCHED_LOOP;
-    errorf("unmatched end of loop");
+    errorf("unmatched start of loop (missing ']')");
     goto cleanup;
   }
 
