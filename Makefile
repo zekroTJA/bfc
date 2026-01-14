@@ -1,17 +1,20 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -Iinclude
+CFLAGS = -Wall -Wextra -std=c11 -Iinclude -fPIE
+LDFLAGS = -pie
 SRC = $(wildcard src/*.c)
 OBJ = $(SRC:src/%.c=build/%.o)
 TARGET = $(CURDIR)/dist/bfc
 TESTS_DIR = $(CURDIR)/tests
+FUZZ_IMAGE = bfc-fuzz
+FUZZ_ARGS = -P explore
 
 
-.PHONY: clean static test
+.PHONY: clean static test build_fuzz fuzz
 
 
 $(TARGET): $(OBJ)
 	mkdir -p $(dir $(TARGET))
-	$(CC) $(OBJ) -o $(TARGET)
+	$(CC) $(LDFLAGS) $(OBJ) -o $(TARGET)
 
 static: $(OBJ)
 	mkdir -p $(dir $(TARGET))
@@ -32,3 +35,9 @@ $(TESTS_DIR)/.deps: $(TESTS_DIR)/requirements.txt
 
 test: $(TARGET) | $(TESTS_DIR)/.deps
 	python3 $(TESTS_DIR)/run.py
+
+build_fuzz:
+	docker build . -f "$(CURDIR)/fuzz/Dockerfile" -t $(FUZZ_IMAGE)
+
+fuzz: build_fuzz
+	docker run -v "$(CURDIR)/fuzz/out:/output" $(FUZZ_IMAGE) $(FUZZ_ARGS)
