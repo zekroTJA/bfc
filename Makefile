@@ -8,6 +8,11 @@ TESTS_DIR = $(CURDIR)/tests
 FUZZ_IMAGE = bfc-fuzz
 FUZZ_ARGS = -P explore
 
+DOCKER := $(shell command -v docker 2>/dev/null)
+ifeq ($(DOCKER),)
+    DOCKER := $(shell command -v podman 2>/dev/null)
+endif
+
 
 .PHONY: clean static test build_fuzz fuzz
 
@@ -37,7 +42,8 @@ test: $(TARGET) | $(TESTS_DIR)/.deps
 	python3 $(TESTS_DIR)/run.py
 
 build_fuzz:
-	docker build . -f "$(CURDIR)/fuzz/Dockerfile" -t $(FUZZ_IMAGE)
+	$(DOCKER) build . -f "$(CURDIR)/fuzz/Dockerfile" -t $(FUZZ_IMAGE)
 
 fuzz: build_fuzz
-	docker run -v "$(CURDIR)/fuzz/out:/output" $(FUZZ_IMAGE) $(FUZZ_ARGS)
+	mkdir -p $(CURDIR)/fuzz/out
+	$(DOCKER) run -v "$(CURDIR)/fuzz/out:/output" $(FUZZ_IMAGE) $(FUZZ_ARGS)

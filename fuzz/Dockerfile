@@ -1,4 +1,4 @@
-FROM aflplusplus/aflplusplus
+FROM docker.io/aflplusplus/aflplusplus
 WORKDIR /src
 COPY fuzz/entrypoint.sh /bin/entrypoint.sh
 COPY src/ src/

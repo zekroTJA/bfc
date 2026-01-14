@@ -1,4 +1,4 @@
-FROM alpine:latest AS build
+FROM docker.io/alpine:latest AS build
 WORKDIR /build
 COPY src/ src/
 COPY Makefile .
