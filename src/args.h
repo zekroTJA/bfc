@@ -5,9 +5,11 @@
 
 typedef struct args {
   int buffer_size;
-  bool dynamic_reallocation;
-  bool json;
   bool debug;
+  bool deny_input;
+  bool dynamic_reallocation;
+  char *input;
+  bool json;
   int pos_c;
   char **pos_v;
 } args;

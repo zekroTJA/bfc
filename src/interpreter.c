@@ -36,6 +36,7 @@ const CELL MAX_CELL = maxof(CELL);
 #define C_VAL_INC '+'
 #define C_VAL_DEC '-'
 #define C_PRINT '.'
+#define C_INPUT ','
 #define C_LOOP_START '['
 #define C_LOOP_END ']'
 
@@ -45,6 +46,10 @@ typedef struct scanner {
 } scanner;
 
 char scanner_next(scanner *s) {
+  if (s->src == NULL) {
+    return EOF;
+  }
+
   char c = s->src[s->cursor];
   if (c == '\0') {
     return EOF;
@@ -99,11 +104,12 @@ void *zero_realloc(void *ptr, unsigned long curr_size, unsigned long new_size) {
   return new_ptr;
 }
 
-int bf_run(char *sinput, int buffer_size, bool dynamic_realloc,
-           bool output_json, bool debug) {
+int bf_run(char *program, int buffer_size, bool dynamic_realloc,
+           bool output_json, bool debug, bool deny_input, char *sinput) {
 
   assert(buffer_size > 0);
-  assert(sinput != NULL);
+  assert(program != NULL);
+  assert(!(deny_input && sinput != NULL));
 
   int err = 0;
 
@@ -119,7 +125,8 @@ int bf_run(char *sinput, int buffer_size, bool dynamic_realloc,
 
   int pointer = 0;
 
-  scanner sc = {.src = sinput, .cursor = 0};
+  scanner sc = {.src = program, .cursor = 0};
+  scanner sinput_sc = {.src = sinput, .cursor = 0};
 
   dstring output_ds = {};
 
@@ -185,6 +192,25 @@ int bf_run(char *sinput, int buffer_size, bool dynamic_realloc,
       } else {
         putc(buffer[pointer], stdout);
       }
+      break;
+
+    case C_INPUT:
+      if (deny_input) {
+        err = ERR_INPUT_DISALLOWED;
+        errorf("input is disallowed");
+        goto cleanup;
+      }
+
+      char input_char;
+      if (sinput != NULL) {
+        input_char = scanner_next(&sinput_sc);
+      } else {
+        input_char = getchar();
+      }
+      if (input_char == EOF) {
+        input_char = 0;
+      }
+      buffer[pointer] = input_char;
       break;
 
     case C_LOOP_START:

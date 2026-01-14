@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   }
 
   err = bf_run(sinput, args.buffer_size, args.dynamic_reallocation, args.json,
-               args.debug);
+               args.debug, args.deny_input, args.input);
 
 cleanup:
   free(sinput);

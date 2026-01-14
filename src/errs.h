@@ -1,16 +1,21 @@
 #ifndef ERRS_H
 #define ERRS_H
 
+// Main errors
 #define ERR_OPENING_INPUT_FILE 1
 #define ERR_READING_INPUT 2
 
+// Argument parser errors
 #define ERR_INVALID_ARGUMENT 101
 
+// Parser errors
 #define ERR_CELL_BUFFER_ALLOCATION_FAILED 201
 #define ERR_BUFFER_INDEX_OUT_OF_BOUNDS 202
 #define ERR_UNMATCHED_LOOP 203
 #define ERR_CELL_BUFFER_DYNAMIC_ALLOCATION_FAILED 204
+#define ERR_INPUT_DISALLOWED 205
 
+// dstring errors
 #define ERR_DSTRING_ALLOC_FAILED 301
 
 #endif

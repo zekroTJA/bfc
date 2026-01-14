@@ -13,7 +13,7 @@ def args_invalid():
     res = akane.exec_process((BINARY, "--invalid-arg"), unchecked=True)
     akane.assert_eq(ERROR_CODES["ERR_INVALID_ARGUMENT"], res.returncode)
 
-    res = akane.exec_process((BINARY, "-i"), unchecked=True)
+    res = akane.exec_process((BINARY, "-ä"), unchecked=True)
     akane.assert_eq(ERROR_CODES["ERR_INVALID_ARGUMENT"], res.returncode)
 
 

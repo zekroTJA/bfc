@@ -18,3 +18,21 @@ def hello_world_dynamic_buffer():
 
     res = akane.exec((BINARY, "--buffer-size", "2", "--dynamic-reallocation"), input=INPUT)
     akane.assert_eq("Hello World!\n", res)
+
+
+@akane.test("general: read input")
+def read_input():
+    res = akane.exec((BINARY, "--input", "a"), input=",.")
+    akane.assert_eq("a", res)
+
+    res = akane.exec((BINARY, "--input", "Hello World!"), input=",[.,]")
+    akane.assert_eq("Hello World!", res)
+
+
+@akane.test("general: deny input")
+def deny_input():
+    res = akane.exec_process((BINARY, "--deny-input"), input="+++++[.-]")
+    akane.assert_eq(0, res.returncode)
+
+    res = akane.exec_process((BINARY, "--deny-input"), input=",[.,]", unchecked=True)
+    akane.assert_eq(ERROR_CODES["ERR_INPUT_DISALLOWED"], res.returncode)
