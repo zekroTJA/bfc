@@ -1,6 +1,6 @@
 # bfc
 
-Brainfuck interpreter written in C.
+Brainfuck interpreter written in C. Because why not.
 
 ## Motivation
 
