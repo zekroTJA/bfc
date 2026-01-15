@@ -1,0 +1,22 @@
+name: Fuzzing
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "7 7 * * fri"
+
+jobs:
+  fuzz:
+    name: Fuzzing
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        fuzz_args:
+          - -P explore
+          - -P exploit
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v6
+      - name: Run Fuzzing
+        run: make "FUZZ_ARGS=${{ matrix.fuzz_args }}" fuzz
