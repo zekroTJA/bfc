@@ -7,7 +7,7 @@ TARGET = $(CURDIR)/dist/bfc
 TESTS_DIR = $(CURDIR)/tests
 FUZZ_IMAGE = bfc-fuzz
 FUZZ_ARGS = -P explore
-VALGRIND = valgrind --leak-check=full --show-leak-kinds=all
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1
 
 DOCKER := $(shell command -v docker 2>/dev/null)
 ifeq ($(DOCKER),)
