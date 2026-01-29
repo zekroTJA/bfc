@@ -68,6 +68,7 @@ int dstring_push_char_escaped(dstring *ds, char c) {
         return err;
       }
     }
+    return 0;
   }
 
   return dstring_push_char(ds, c);

@@ -1,3 +1,5 @@
+import json
+
 import akane
 from util import BINARY, ERROR_CODES
 
@@ -36,3 +38,11 @@ def deny_input():
 
     res = akane.exec_process((BINARY, "--deny-input"), input=",[.,]", unchecked=True)
     akane.assert_eq(ERROR_CODES["ERR_INPUT_DISALLOWED"], res.returncode)
+
+
+@akane.test("general: hello world")
+def zero_byte_json():
+    INPUT = "."
+    res = akane.exec((BINARY, "--json", "--buffer-size", "1"), input=INPUT)
+    res_obj = json.loads(res)
+    akane.assert_eq("\u0000", res_obj["output"])
